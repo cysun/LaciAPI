@@ -1,4 +1,7 @@
 {
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=laci;Username=cysun;Password=abcd"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
