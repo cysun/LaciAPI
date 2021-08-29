@@ -1,4 +1,5 @@
 {
+  "AllowedCorsOrigin": "https://cysun.org",
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Database=laci;Username=cysun;Password=abcd"
   },

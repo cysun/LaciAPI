@@ -28,6 +28,21 @@ namespace Laci
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => {
+                if (Environment.IsDevelopment()) {
+                    options.AddPolicy("MyAllowAll", builder => {
+                        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    });
+                }
+                else {
+                    options.AddPolicy("MyAllowSome", builder => {
+                        builder.WithOrigins(Configuration["AllowedCorsOrigin"]);
+                    });
+                }
+            });
+
+            services.AddRouting(options => options.LowercaseUrls = true);
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -49,6 +64,11 @@ namespace Laci
             }
 
             app.UseRouting();
+
+            if (Environment.IsDevelopment())
+                app.UseCors("MyAllowAll");
+            else
+                app.UseCors("MyAllowSome");
 
             app.UseAuthorization();
 
