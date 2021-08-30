@@ -23,15 +23,15 @@ namespace Laci.Controllers
         }
 
         [HttpGet]
-        public List<City> Cites()
+        public ResponseStructure Cites()
         {
-            return _cityService.GetCities();
+            return ResponseStructure.Result(_cityService.GetCities());
         }
 
         [HttpGet("{cityId}/records")]
-        public List<Record> CityRecords(int cityId)
+        public ResponseStructure CityRecords(int cityId)
         {
-            return _recordService.GetRecords(cityId);
+            return ResponseStructure.Result(_recordService.GetRecords(cityId));
         }
     }
 }
