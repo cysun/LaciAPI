@@ -18,9 +18,11 @@ namespace Laci
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
+                .ConfigureWebHostDefaults(webBuilder => {
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+                        webBuilder.UseStartup<Startup>();
+                    else
+                        webBuilder.UseStartup<Startup>().UseUrls("http://localhost:5011");
                 });
     }
 }
