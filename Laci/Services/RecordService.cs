@@ -1,4 +1,5 @@
 ﻿using Laci.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,12 @@ namespace Laci.Services
         public List<Record> GetRecords(int cityId)
         {
             return _db.Records.Where(r => r.CityId == cityId).OrderBy(r => r.Date).ToList();
+        }
+
+        public List<Record> GetLatestRecords()
+        {
+            var sql = @"SELECT * FROM ""Records"" WHERE ""Date"" = (SELECT max(""Date"") FROM ""Records"")";
+            return _db.Records.FromSqlRaw(sql).Include(r => r.City).ToList();
         }
 
         public void AddRecord(Record record) => _db.Records.Add(record);

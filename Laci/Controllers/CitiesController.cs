@@ -11,12 +11,12 @@ namespace Laci.Controllers
 {
     [ApiController]
     [Route("cities")]
-    public class CityController : ControllerBase
+    public class CitiesController : ControllerBase
     {
         private readonly CityService _cityService;
         private readonly RecordService _recordService;
 
-        public CityController(CityService cityService, RecordService recordService)
+        public CitiesController(CityService cityService, RecordService recordService)
         {
             _cityService = cityService;
             _recordService = recordService;
