@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,13 @@ namespace Laci
             services.AddControllers();
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Laci", Version = "v1" });
+            });
+
+            services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options => {
+                options.Authority = Configuration["OIDC:Authority"];
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateAudience = false
+                };
             });
 
             services.AddScoped<CityService>();

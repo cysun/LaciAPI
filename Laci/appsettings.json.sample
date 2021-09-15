@@ -3,6 +3,9 @@
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Database=laci;Username=cysun;Password=abcd"
   },
+  "OIDC": {
+    "Authority": "https://localhost:5001"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
