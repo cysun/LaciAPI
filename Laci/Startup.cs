@@ -59,6 +59,11 @@ namespace Laci
                 };
             });
 
+            services.AddAuthorization(options => {
+                options.AddPolicy("HasApiScope",
+                    policy => policy.RequireClaim("scope", Configuration["OIDC:ApiScope"]));
+            });
+
             services.AddScoped<CityService>();
             services.AddScoped<RecordService>();
         }
@@ -78,6 +83,7 @@ namespace Laci
             else
                 app.UseCors("MyAllowSome");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {

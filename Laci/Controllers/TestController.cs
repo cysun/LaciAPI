@@ -9,15 +9,22 @@ using System.Threading.Tasks;
 
 namespace Laci.Controllers
 {
-    [Authorize]
-    [ApiController]
     [Route("test")]
+    [ApiController]
     public class TestController : ControllerBase
     {
-        [HttpGet]
-        public ResponseStructure Index()
+        [HttpGet("1")]
+        [Authorize]
+        public ResponseStructure Test1()
         {
-            return ResponseStructure.Result(User);
+            return ResponseStructure.Result(from c in User.Claims select new { c.Type, c.Value });
+        }
+
+        [HttpGet("2")]
+        [Authorize(Policy = "HasApiScope")]
+        public ResponseStructure Test2()
+        {
+            return ResponseStructure.Result(from c in User.Claims select new { c.Type, c.Value });
         }
     }
 }

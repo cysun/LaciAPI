@@ -4,7 +4,8 @@
     "DefaultConnection": "Host=localhost;Database=laci;Username=cysun;Password=abcd"
   },
   "OIDC": {
-    "Authority": "https://localhost:5001"
+    "Authority": "https://identity.cysun.org",
+    "ApiScope": "laci-api"
   },
   "Logging": {
     "LogLevel": {
