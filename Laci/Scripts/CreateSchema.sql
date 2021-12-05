@@ -26,7 +26,7 @@ CREATE TABLE "Records" (
 CREATE UNIQUE INDEX "IX_Cities_Name" ON "Cities" ("Name");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20210825175054_InitialSchema', '5.0.9');
+VALUES ('20211205003651_InitialSchema', '6.0.0');
 
 COMMIT;
 

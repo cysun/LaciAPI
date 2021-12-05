@@ -1,28 +1,88 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Laci.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
-namespace Laci
+var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5011");
+
+var configuration = builder.Configuration;
+var environment = builder.Environment;
+
+// Configure Services
+var services = builder.Services;
+
+services.AddCors(options =>
 {
-    public class Program
+    if (environment.IsDevelopment())
     {
-        public static void Main(string[] args)
+        options.AddPolicy("MyAllowAll", builder =>
         {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => {
-                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
-                        webBuilder.UseStartup<Startup>();
-                    else
-                        webBuilder.UseStartup<Startup>().UseUrls("http://localhost:5011");
-                });
+            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        });
     }
+    else
+    {
+        options.AddPolicy("MyAllowSome", builder =>
+        {
+            builder.WithOrigins(configuration["AllowedCorsOrigin"]);
+        });
+    }
+});
+
+services.AddRouting(options => options.LowercaseUrls = true);
+
+services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+services.AddControllers();
+
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Laci", Version = "v1" });
+});
+
+services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+{
+    options.Authority = configuration["OIDC:Authority"];
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false
+    };
+});
+
+services.AddAuthorization(options =>
+{
+    options.AddPolicy("HasApiScope",
+        policy => policy.RequireClaim("scope", configuration["OIDC:ApiScope"]));
+});
+
+services.AddScoped<CityService>();
+services.AddScoped<RecordService>();
+
+// Build App
+var app = builder.Build();
+
+// Configure Middleware Pipeline
+if (environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseRouting();
+
+if (environment.IsDevelopment())
+    app.UseCors("MyAllowAll");
+else
+    app.UseCors("MyAllowSome");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+// Run App
+app.Run();
